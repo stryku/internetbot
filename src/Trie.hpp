@@ -9,13 +9,9 @@
 class Trie
 {
 public:
-    Trie()
-    {
-        static std::once_flag once;
-
-        std::call_once( once, [this] { validCharsLen = validChars().length(); } );
-        root = std::make_shared<TrieStruct>();
-    }
+    Trie() :
+        root( std::make_shared<TrieStruct>() )
+    {}
     Trie( const Trie & ) = delete;
     Trie& operator=( const Trie & ) = delete;
 
@@ -23,6 +19,8 @@ public:
     {
         if( !isValidString( str ) )
             return false;
+
+        std::lock_guard<std::mutex> lock( sync );
 
         auto currentPtr = root;
 
@@ -48,6 +46,8 @@ public:
     {
         if( !isValidString( str ) )
             return false;
+
+        std::lock_guard<std::mutex> lock( sync );
 
         auto currentPtr = root;
 
