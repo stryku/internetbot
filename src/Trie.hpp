@@ -11,7 +11,12 @@ class Trie
 public:
     Trie() :
         root( std::make_shared<TrieStruct>() )
-    {}
+    {
+        auto &chars = validChars();
+
+        for( size_t i = 0; i < chars.length(); ++i )
+            charToPtrIndex[chars[i]] = i;
+    }
     Trie( const Trie & ) = delete;
     Trie& operator=( const Trie & ) = delete;
 
@@ -37,9 +42,10 @@ public:
         {
             currentPtr->endOfString = true;
             ++stringsInTrie;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     bool isInside( const std::string &str ) const

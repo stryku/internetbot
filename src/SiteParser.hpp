@@ -2,6 +2,7 @@
 
 #include "ThreadSafeQueue.hpp"
 #include "EmailsContainer.hpp"
+#include "UrlsQueueProxy.hpp"
 
 #include <regex>
 #include <vector>
@@ -14,7 +15,7 @@ private:
     typedef ThreadSafeQueue<std::string> SiteContentsQueue;
 
 public:
-    SiteParser( UrlsQueue &urlsQueue,
+    SiteParser( UrlsQueueProxy &urlsQueue,
                 SiteContentsQueue &siteContentsQueue,
                 EmailsContainer &emailsContainer ) :
         urlsQueue( urlsQueue ),
@@ -71,7 +72,7 @@ private:
                    std::back_inserter( emailsContainer ) );
     }
 
-    UrlsQueue &urlsQueue;
+    UrlsQueueProxy &urlsQueue;
     SiteContentsQueue &siteContentsQueue;
     EmailsContainer &emailsContainer;
 };
