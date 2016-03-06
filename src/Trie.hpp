@@ -24,7 +24,7 @@ public:
         if( !isValidString( str ) )
             return false;
 
-        auto& currentPtr = root;
+        auto currentPtr = root;
 
         for( const char c : str )
         {
@@ -34,8 +34,12 @@ public:
             if( currentPtr == nullptr )
                 currentPtr = std::make_shared<TrieStruct>();
         }
-
-        currentPtr->endOfString = true;
+        
+        if( !currentPtr->endOfString )
+        {
+            currentPtr->endOfString = true;
+            ++stringsInTrie;
+        }
 
         return true;
     }
@@ -45,7 +49,7 @@ public:
         if( !isValidString( str ) )
             return false;
 
-        auto& currentPtr = root;
+        auto currentPtr = root;
 
         for( const char c : str )
         {
@@ -64,6 +68,11 @@ public:
         return root->realSize;
     }
 
+    size_t size() const
+    {
+        return stringsInTrie;
+    }
+
 private:
     struct TrieStruct
     {
@@ -75,19 +84,19 @@ private:
 
         TrieStruct()
         {
-            childrens.resize( validCharsLen );
+            childrens.resize( validChars().length() );
             realSize += realTrieSize(); 
         }
 
         static const size_t realTrieSize()
         {
-            return validCharsLen * sizeof( TrieStructPtr ) + sizeof( bool );
+            return validChars().length() * sizeof( TrieStructPtr ) + sizeof( bool );
         }
     };
 
     static const std::string& validChars()
     {
-        static const std::string chars{ "qwertyuiopasdfghjklzxcvbnm?./&;=+:!1234567890" };
+        static const std::string chars{ "qwertyuiopasdfghjklzxcvbnm?./&;=+:!1234567890_" };
         return chars;
     }
     
@@ -103,8 +112,9 @@ private:
                             isValidChar );
     }
 
-    static size_t validCharsLen;
+    static std::mutex sync;
     std::array<size_t, 128> charToPtrIndex;
+    std::atomic<size_t> stringsInTrie{0};
 
     TrieStruct::TrieStructPtr root;
 };
